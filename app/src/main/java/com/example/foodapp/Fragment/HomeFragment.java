@@ -15,6 +15,7 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.interfaces.ItemClickListener;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.example.foodapp.MenuBottomSheetFragment;
 import com.example.foodapp.R;
 import com.example.foodapp.adapter.PopularAdapter;
 import com.example.foodapp.databinding.FragmentHomeBinding;
@@ -35,8 +36,16 @@ public class HomeFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding.textViewSeeAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MenuBottomSheetFragment bottomSheetDialog = new MenuBottomSheetFragment();
+                bottomSheetDialog.show(getParentFragmentManager(), "Test");
+            }
+        });
+
         return binding.getRoot();
     }
 
