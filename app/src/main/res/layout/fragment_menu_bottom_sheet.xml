@@ -3,12 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
     android:orientation="vertical"
-    android:gravity="center"
+    android:background="@color/white"
     tools:context=".MenuBottomSheetFragment">
 
 
-
+    <ImageButton
+        android:id="@+id/buttonBack"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/arrow_left"
+        android:background="@android:color/transparent" />
     <TextView
         android:gravity="center"
         android:layout_marginTop="8dp"

@@ -24,6 +24,10 @@ class MenuBottomSheetFragment : BottomSheetDialogFragment() {
     ): View? {
         binding = FragmentMenuBottomSheetBinding.inflate(inflater, container, false)
 
+        binding.buttonBack.setOnClickListener {
+            dismiss()
+        }
+
         val cmenuFoodName=listOf("Burger", "Sandwich", "Momo",
             "Item", "Momo", "Sandwich")
 
