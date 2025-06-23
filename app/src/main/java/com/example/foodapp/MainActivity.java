@@ -10,22 +10,32 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+
+import com.example.foodapp.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Tìm NavController gắn với fragmentContainerView
-        NavController navController = findNavController(this, R.id.fragmentContainerView);
+        // Find NavController associated with fragmentContainerView
+        NavController navController = Navigation.findNavController(this, R.id.fragmentContainerView);
 
-        // Gắn BottomNavigationView với NavController bằng NavigationUI (Java way)
-        BottomNavigationView bottomnav = findViewById(R.id.bottomNavigationView);
-        NavigationUI.setupWithNavController(bottomnav, navController);
+        // Attach BottomNavigationView to NavController using NavigationUI (Java way)
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
+        NavigationUI.setupWithNavController(bottomNav, navController);
+
+        binding.notificationButton.setOnClickListener(v -> {
+            NotificationBottomFragment bottomSheetDialog = new NotificationBottomFragment();
+            bottomSheetDialog.show(getSupportFragmentManager(), "NotificationBottomSheet");
+        });
     }
 }
