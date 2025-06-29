@@ -1,5 +1,8 @@
 package com.example.foodapp.adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -7,16 +10,21 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.foodapp.DetailActivity;
 import com.example.foodapp.databinding.PopularItemBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.PopularViewHolder> {
+
     private final List<String> items;
     private final List<String> prices;
     private final List<Integer> images;
+    private final Context context; // <- tương đương requireContext
 
-    public PopularAdapter(List<String> items, List<String> prices, List<Integer> images) {
+    public PopularAdapter(Context context, List<String> items, List<String> prices, List<Integer> images) {
+        this.context = context;
         this.items = items;
         this.prices = prices;
         this.images = images;
@@ -31,7 +39,20 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.PopularV
 
     @Override
     public void onBindViewHolder(@NonNull PopularViewHolder holder, int position) {
-        holder.bind(items.get(position), prices.get(position), images.get(position));
+        String item = items.get(position);
+        String price = prices.get(position);
+        int imageResId = images.get(position);
+
+        holder.bind(item, price, imageResId);
+
+        // Xử lý khi click vào item
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("MenuItemName", item); // Truyền tên món ăn
+            intent.putExtra("MenuItemPrice", price); // Truyền giá (nếu cần)
+            intent.putExtra("MenuItemImage", imageResId); // Truyền ID ảnh cụ thể tại position
+            context.startActivity(intent);
+        });
     }
 
     @Override

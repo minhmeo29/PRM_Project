@@ -56,7 +56,9 @@
             android:layout_weight="1"
             android:fontFamily="@font/lato_black_italic"
             android:paddingLeft="8dp"
-            android:text="Tên" />
+            android:text="Tên"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -66,7 +68,9 @@
             android:ems="10"
             android:fontFamily="@font/lato_black"
             android:inputType="text"
-            android:text="Name" />
+            android:text="Name"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
     </LinearLayout>
 
     <LinearLayout
@@ -88,7 +92,9 @@
             android:layout_weight="1"
             android:fontFamily="@font/lato_black_italic"
             android:paddingLeft="8dp"
-            android:text="Địa chỉ" />
+            android:text="Địa chỉ"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -99,7 +105,9 @@
 
             android:fontFamily="@font/lato_black"
             android:inputType="textMultiLine"
-            android:text="FPT Hà Nội,hehehehehehehehehehehe" />
+            android:text="FPT Hà Nội,hehehehehehehehehehehe"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
     </LinearLayout>
     <LinearLayout
         android:layout_marginTop="16dp"
@@ -120,7 +128,9 @@
             android:layout_weight="1"
             android:fontFamily="@font/lato_black_italic"
             android:paddingLeft="8dp"
-            android:text="Điện thoại" />
+            android:text="Điện thoại"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -130,7 +140,9 @@
             android:ems="10"
             android:fontFamily="@font/lato_black"
             android:inputType="text"
-            android:text="0123456798" />
+            android:text="0123456798"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
     </LinearLayout>
     <LinearLayout
         android:layout_marginTop="16dp"
@@ -151,7 +163,9 @@
             android:layout_weight="1"
             android:fontFamily="@font/lato_black_italic"
             android:paddingLeft="8dp"
-            android:text="Phương thức thanh toán" />
+            android:text="Phương thức thanh toán"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
 
         <ImageView
             android:id="@+id/imageView6"
@@ -183,7 +197,9 @@
             android:layout_weight="1"
             android:fontFamily="@font/lato_black_italic"
             android:paddingLeft="8dp"
-            android:text="Tổng tiền" />
+            android:text="Tổng tiền"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/black" />
 
         <EditText
             android:layout_width="wrap_content"
