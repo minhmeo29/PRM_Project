@@ -18,7 +18,7 @@ public class Splash_Screen extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash_screen);
         new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(Splash_Screen.this, StartActivity.class));
+            startActivity(new Intent(Splash_Screen.this, LoginActivity.class));
             finish();
         }, 3000);
 
