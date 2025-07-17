@@ -37,11 +37,15 @@ public class DetailActivity extends AppCompatActivity {
         foodPrice = intent.getStringExtra("MenuItemPrice");
         foodImage = intent.getStringExtra("MenuItemImage");
 
-        binding.detailFoodName.setText(foodName);
-        binding.DescriptionTextView.setText(foodDescriptions);
-        binding.IngredientsTextView.setText(foodIngredients);
-        if (foodImage != null) {
+        android.util.Log.d("DETAIL", "foodName=" + foodName + ", foodDescriptions=" + foodDescriptions + ", foodIngredients=" + foodIngredients + ", foodPrice=" + foodPrice + ", foodImage=" + foodImage);
+
+        binding.detailFoodName.setText(foodName != null ? foodName : "Không có thông tin");
+        binding.DescriptionTextView.setText(foodDescriptions != null ? foodDescriptions : "Không có thông tin");
+        binding.IngredientsTextView.setText(foodIngredients != null ? foodIngredients : "Không có thông tin");
+        if (foodImage != null && !foodImage.equals("null")) {
             Glide.with(this).load(Uri.parse(foodImage)).into(binding.detailFoodImage);
+        } else {
+            binding.detailFoodImage.setImageResource(R.drawable.menu1); // Ảnh mặc định, đổi nếu muốn
         }
 
         binding.imageButton.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +74,7 @@ public class DetailActivity extends AppCompatActivity {
                 foodIngredients
         );
         FirebaseDatabase.getInstance().getReference()
-                .child("user")
+                .child("users")
                 .child(userId)
                 .child("CartItems")
                 .push()

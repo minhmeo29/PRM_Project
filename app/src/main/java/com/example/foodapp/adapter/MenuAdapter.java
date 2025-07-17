@@ -70,10 +70,10 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
             MenuItem menuItem = menuItems.get(position);
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("MenuItemName", menuItem.getFoodName());
-            intent.putExtra("MenuItemImage", menuItem.getFoodImage());
+            intent.putExtra("MenuItemImage", String.valueOf(menuItem.getFoodImage())); // Đảm bảo là String
             intent.putExtra("MenuItemDescription", menuItem.getFoodDescription());
             intent.putExtra("MenuItemIngredients", menuItem.getFoodIngredient());
-            intent.putExtra("MenuItemPrice", menuItem.getFoodPrice());
+            intent.putExtra("MenuItemPrice", String.valueOf(menuItem.getFoodPrice())); // Đảm bảo là String
             context.startActivity(intent);
         }
 

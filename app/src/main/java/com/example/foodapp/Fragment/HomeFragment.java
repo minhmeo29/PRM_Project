@@ -77,8 +77,18 @@ public class HomeFragment extends Fragment {
         List<String> foodName = Arrays.asList("Burger", "Sandwich", "Indomie");
         List<String> price = Arrays.asList("10,000 VND", "20,000 VND", "50,000 VND");
         List<Integer> popularFoodImages = Arrays.asList(R.drawable.menu1, R.drawable.menu2, R.drawable.menu3);
+        List<String> descriptions = Arrays.asList(
+                "Bánh mì kẹp thịt bò, rau, phô mai",
+                "Bánh mì sandwich kẹp trứng",
+                "Mì xào kiểu Indonesia"
+        );
+        List<String> ingredients = Arrays.asList(
+                "Thịt bò, rau, phô mai",
+                "Bánh mì, trứng, rau",
+                "Mì, rau, gia vị"
+        );
         // Thiết lập RecyclerView
-        PopularAdapter adapter = new PopularAdapter(requireContext(),foodName, price, popularFoodImages);
+        PopularAdapter adapter = new PopularAdapter(requireContext(), foodName, price, popularFoodImages, descriptions, ingredients);
         binding.PopulerRecycleView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.PopulerRecycleView.setAdapter(adapter);
     }

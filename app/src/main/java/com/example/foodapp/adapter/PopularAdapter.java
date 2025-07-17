@@ -21,13 +21,17 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.PopularV
     private final List<String> items;
     private final List<String> prices;
     private final List<Integer> images;
+    private final List<String> descriptions;
+    private final List<String> ingredients;
     private final Context context; // <- tương đương requireContext
 
-    public PopularAdapter(Context context, List<String> items, List<String> prices, List<Integer> images) {
+    public PopularAdapter(Context context, List<String> items, List<String> prices, List<Integer> images, List<String> descriptions, List<String> ingredients) {
         this.context = context;
         this.items = items;
         this.prices = prices;
         this.images = images;
+        this.descriptions = descriptions;
+        this.ingredients = ingredients;
     }
 
     @NonNull
@@ -49,8 +53,10 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.PopularV
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("MenuItemName", item); // Truyền tên món ăn
-            intent.putExtra("MenuItemPrice", price); // Truyền giá (nếu cần)
-            intent.putExtra("MenuItemImage", imageResId); // Truyền ID ảnh cụ thể tại position
+            intent.putExtra("MenuItemPrice", price); // Truyền giá
+            intent.putExtra("MenuItemImage", "android.resource://" + context.getPackageName() + "/" + imageResId); // Truyền đúng uri resource
+            intent.putExtra("MenuItemDescription", descriptions.get(position)); // Truyền mô tả
+            intent.putExtra("MenuItemIngredients", ingredients.get(position)); // Truyền nguyên liệu
             context.startActivity(intent);
         });
     }

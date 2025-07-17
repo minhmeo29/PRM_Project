@@ -1,33 +1,57 @@
 package com.example.foodapp.adapter;
 
+import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.foodapp.databinding.CartItemBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
-    private final ArrayList<String> cartItems;
-    private final ArrayList<String> cartItemPrice;
-    private final ArrayList<Integer> cartImage;
-    private final ArrayList<Integer> itemQuantities;
+    private final Context context;
+    private final List<String> cartItems;
+    private final List<String> cartItemPrices;
+    private final List<String> cartDescriptions;
+    private final List<String> cartImages;
+    private final List<Integer> cartQuantity;
+    private final List<String> cartIngredient;
+    private final FirebaseAuth auth;
+    private final DatabaseReference cartItemsReference;
+    private int[] itemQuantities;
 
-    public CartAdapter(ArrayList<String> cartItems, ArrayList<String> cartItemPrice, ArrayList<Integer> cartImage) {
-        this.cartItems = cartItems != null ? cartItems : new ArrayList<>();
-        this.cartItemPrice = cartItemPrice != null ? cartItemPrice : new ArrayList<>();
-        this.cartImage = cartImage != null ? cartImage : new ArrayList<>();
-        this.itemQuantities = new ArrayList<>();
-        initializeQuantities();
-    }
-
-    private void initializeQuantities() {
+    public CartAdapter(Context context,
+                       List<String> cartItems,
+                       List<String> cartItemPrices,
+                       List<String> cartDescriptions,
+                       List<String> cartImages,
+                       List<Integer> cartQuantity,
+                       List<String> cartIngredient) {
+        this.context = context;
+        this.cartItems = cartItems;
+        this.cartItemPrices = cartItemPrices;
+        this.cartDescriptions = cartDescriptions;
+        this.cartImages = cartImages;
+        this.cartQuantity = cartQuantity;
+        this.cartIngredient = cartIngredient;
+        this.auth = FirebaseAuth.getInstance();
+        String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "";
+        this.cartItemsReference = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("CartItems");
+        this.itemQuantities = new int[cartItems.size()];
         for (int i = 0; i < cartItems.size(); i++) {
-            itemQuantities.add(1);
+            itemQuantities[i] = 1;
         }
     }
 
@@ -35,81 +59,135 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     @Override
     public CartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         CartItemBinding binding = CartItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new CartViewHolder(binding, this);
+        return new CartViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
-        holder.bind(cartItems.get(position), cartItemPrice.get(position), cartImage.get(position), itemQuantities.get(position));
+        holder.bind(position);
     }
 
     @Override
     public int getItemCount() {
-        return cartItems != null ? cartItems.size() : 0;
+        return cartItems.size();
     }
 
-    public void decreaseQuantity(int position) {
-        if (itemQuantities.get(position) > 1) {
-            itemQuantities.set(position, itemQuantities.get(position) - 1);
-            notifyItemChanged(position);
-        } else {
-            deleteItem(position); // Xóa item nếu số lượng giảm xuống 1 hoặc nhỏ hơn
-        }
+    public List<Integer> getUpdatedItemsQuantities() {
+        return cartQuantity;
     }
 
-    public void increaseQuantity(int position) {
-        if (itemQuantities.get(position) < 10) {
-            itemQuantities.set(position, itemQuantities.get(position) + 1);
-            notifyItemChanged(position);
-        }
-    }
-
-    public void deleteItem(int position) {
-        if (position >= 0 && position < cartItems.size()) {
-            cartItems.remove(position);
-            cartItemPrice.remove(position);
-            cartImage.remove(position);
-            itemQuantities.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    public static class CartViewHolder extends RecyclerView.ViewHolder {
+    class CartViewHolder extends RecyclerView.ViewHolder {
         private final CartItemBinding binding;
-        private final CartAdapter adapter;
 
-        public CartViewHolder(CartItemBinding binding, CartAdapter adapter) {
+        public CartViewHolder(CartItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            this.adapter = adapter;
-
-            binding.minusbutton.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    adapter.decreaseQuantity(position);
-                }
-            });
-
-            binding.plusbutton.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    adapter.increaseQuantity(position);
-                }
-            });
-
-            binding.deleteButton.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    adapter.deleteItem(position);
-                }
-            });
         }
 
-        public void bind(String item, String price, Integer imageResId, Integer quantity) {
+        public void bind(int position) {
+            int quantity = itemQuantities[position];
+            binding.cartFoodName.setText(cartItems.get(position));
+            binding.cartitemPrice.setText(cartItemPrices.get(position));
+            // Xử lý ảnh
+            String uriString = cartImages.get(position);
+            Uri uri = null;
+            if (uriString == null || uriString.equals("null")) {
+                binding.cartimage.setImageResource(com.example.foodapp.R.drawable.menu1); // Ảnh mặc định
+            } else {
+                try {
+                    // Nếu là số nguyên (resource id), chuyển thành resource uri
+                    int resId = Integer.parseInt(uriString);
+                    uri = Uri.parse("android.resource://" + context.getPackageName() + "/" + resId);
+                } catch (NumberFormatException e) {
+                    uri = Uri.parse(uriString);
+                }
+                Glide.with(context).load(uri).into(binding.cartimage);
+            }
             binding.cartitemQuantity.setText(String.valueOf(quantity));
-            binding.cartFoodName.setText(item);
-            binding.cartitemPrice.setText(price);
-            binding.cartimage.setImageResource(imageResId);
+            // Xử lý mô tả, nguyên liệu nếu muốn hiển thị (nếu có TextView)
+            // binding.cartitemDescription.setText(cartDescriptions.get(position) != null ? cartDescriptions.get(position) : "Không có thông tin");
+            // binding.cartitemIngredient.setText(cartIngredient.get(position) != null ? cartIngredient.get(position) : "Không có thông tin");
+            binding.minusbutton.setOnClickListener(v -> deceaseQuantity(position));
+            binding.plusbutton.setOnClickListener(v -> increaseQuantity(position));
+            binding.deleteButton.setOnClickListener(v -> {
+                int itemPosition = getAdapterPosition();
+                if (itemPosition != RecyclerView.NO_POSITION) {
+                    deleteItem(itemPosition);
+                }
+            });
         }
+
+        private void increaseQuantity(int position) {
+            if (itemQuantities[position] < 10) {
+                itemQuantities[position]++;
+                cartQuantity.set(position, itemQuantities[position]);
+                binding.cartitemQuantity.setText(String.valueOf(itemQuantities[position]));
+            }
+        }
+
+        private void deceaseQuantity(int position) {
+            if (itemQuantities[position] > 1) {
+                itemQuantities[position]--;
+                cartQuantity.set(position, itemQuantities[position]);
+                binding.cartitemQuantity.setText(String.valueOf(itemQuantities[position]));
+            }
+        }
+
+        private void deleteItem(int position) {
+            getUniqueKeyAtPosition(position, uniqueKey -> {
+                if (uniqueKey != null) {
+                    removeItem(position, uniqueKey);
+                }
+            });
+        }
+
+        private void removeItem(int position, String uniqueKey) {
+            cartItemsReference.child(uniqueKey).removeValue().addOnSuccessListener(unused -> {
+                cartItems.remove(position);
+                cartImages.remove(position);
+                cartDescriptions.remove(position);
+                cartQuantity.remove(position);
+                cartItemPrices.remove(position);
+                cartIngredient.remove(position);
+                Toast.makeText(context, "Item Deleted", Toast.LENGTH_SHORT).show();
+                // update itemQuantities
+                int[] newQuantities = new int[itemQuantities.length - 1];
+                for (int i = 0, j = 0; i < itemQuantities.length; i++) {
+                    if (i != position) {
+                        newQuantities[j++] = itemQuantities[i];
+                    }
+                }
+                itemQuantities = newQuantities;
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, cartItems.size());
+            }).addOnFailureListener(e -> Toast.makeText(context, "Failed to Delete", Toast.LENGTH_SHORT).show());
+        }
+
+        private void getUniqueKeyAtPosition(int positionRetrieve, OnCompleteListener onComplete) {
+            cartItemsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String uniqueKey = null;
+                    int index = 0;
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        if (index == positionRetrieve) {
+                            uniqueKey = dataSnapshot.getKey();
+                            break;
+                        }
+                        index++;
+                    }
+                    onComplete.onComplete(uniqueKey);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // Handle error if needed
+                }
+            });
+        }
+    }
+
+    interface OnCompleteListener {
+        void onComplete(String uniqueKey);
     }
 }

@@ -2,6 +2,7 @@ package com.example.foodapp;
 
 import static androidx.navigation.Navigation.findNavController;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         binding.notificationButton.setOnClickListener(v -> {
             NotificationBottomFragment bottomSheetDialog = new NotificationBottomFragment();
             bottomSheetDialog.show(getSupportFragmentManager(), "NotificationBottomSheet");
+        });
+
+        binding.seedMenuButton.setOnClickListener(v -> {
+            startActivity(new Intent(this, SeedMenuActivity.class));
         });
     }
 }
