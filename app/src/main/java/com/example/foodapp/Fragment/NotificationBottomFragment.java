@@ -1,4 +1,4 @@
-package com.example.foodapp;
+package com.example.foodapp.Fragment;
 
 import android.os.Bundle;
 
@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.foodapp.R;
 import com.example.foodapp.adapter.NotificationAdapter;
 import com.example.foodapp.databinding.FragmentNotificationBottomBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;

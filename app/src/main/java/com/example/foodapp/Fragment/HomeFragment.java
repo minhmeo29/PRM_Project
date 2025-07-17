@@ -15,7 +15,6 @@ import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.interfaces.ItemClickListener;
 import com.denzcoskun.imageslider.models.SlideModel;
-import com.example.foodapp.MenuBottomSheetFragment;
 import com.example.foodapp.R;
 import com.example.foodapp.adapter.PopularAdapter;
 import com.example.foodapp.databinding.FragmentHomeBinding;
