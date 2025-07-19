@@ -51,7 +51,11 @@ public class CartFragment extends Fragment {
     }
 
     private void getOrderItemsDetail() {
-        DatabaseReference orderIdReference = database.getReference().child("users").child(userId).child("CartItems");
+        DatabaseReference orderIdReference = database.getReference()
+                .child("users")
+                .child(userId)
+                .child("CartItems");
+
         List<String> foodName = new ArrayList<>();
         List<String> foodPrice = new ArrayList<>();
         List<String> foodImage = new ArrayList<>();
@@ -62,17 +66,32 @@ public class CartFragment extends Fragment {
         orderIdReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int index = 0;
+                int totalPrice = 0;
+
                 for (DataSnapshot foodSnapshot : snapshot.getChildren()) {
                     CartItems orderItems = foodSnapshot.getValue(CartItems.class);
                     if (orderItems != null) {
+                        int quantity = foodQuantities.size() > index ? foodQuantities.get(index) : 1;
+
+                        // Lấy đơn giá
+                        int unitPrice = 0;
+                        try {
+                            unitPrice = Integer.parseInt(orderItems.getFoodPrice().replaceAll("[^\\d]", ""));
+                        } catch (Exception ignored) {}
+
+                        totalPrice += quantity * unitPrice;
+
                         if (orderItems.getFoodName() != null) foodName.add(orderItems.getFoodName());
                         if (orderItems.getFoodPrice() != null) foodPrice.add(orderItems.getFoodPrice());
                         if (orderItems.getFoodDescription() != null) foodDescription.add(orderItems.getFoodDescription());
                         if (orderItems.getFoodImage() != null) foodImage.add(orderItems.getFoodImage());
                         if (orderItems.getFoodngredients() != null) foodIngredient.add(orderItems.getFoodngredients());
                     }
+                    index++;
                 }
-                orderNow(foodName, foodPrice, foodDescription, foodImage, foodIngredient, foodQuantities);
+
+                orderNow(foodName, foodPrice, foodDescription, foodImage, foodIngredient, foodQuantities, totalPrice);
             }
 
             @Override
@@ -82,7 +101,11 @@ public class CartFragment extends Fragment {
         });
     }
 
-    private void orderNow(List<String> foodName, List<String> foodPrice, List<String> foodDescription, List<String> foodImage, List<String> foodIngredient, List<Integer> foodQuantities) {
+
+    private void orderNow(List<String> foodName, List<String> foodPrice, List<String> foodDescription,
+                          List<String> foodImage, List<String> foodIngredient,
+                          List<Integer> foodQuantities, int totalPrice) {
+
         if (isAdded() && getContext() != null) {
             Intent intent = new Intent(requireContext(), PayOutActivity.class);
             intent.putStringArrayListExtra("FoodItemName", new ArrayList<>(foodName));
@@ -91,9 +114,11 @@ public class CartFragment extends Fragment {
             intent.putStringArrayListExtra("FoodItemDescription", new ArrayList<>(foodDescription));
             intent.putStringArrayListExtra("FoodItemIngredient", new ArrayList<>(foodIngredient));
             intent.putIntegerArrayListExtra("FoodItemQuantities", new ArrayList<>(foodQuantities));
+            intent.putExtra("totalPrice", totalPrice + " đ"); // Truyền tổng tiền có định dạng
             startActivity(intent);
         }
     }
+
 
     private void retrieveCartItems() {
         database = FirebaseDatabase.getInstance();
