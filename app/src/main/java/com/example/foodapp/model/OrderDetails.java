@@ -1,20 +1,16 @@
 package com.example.foodapp.model;
 
-
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
-public class OrderDetails implements Serializable, Parcelable {
+public class OrderDetails implements Serializable {
+
     private String userUid;
     private String userName;
-    private List<String> foodNames;
-    private List<String> foodImages;
-    private List<String> foodPrices;
-    private List<Integer> foodQuantities;
+    private ArrayList<String> foodNames;
+    private ArrayList<String> foodImages;
+    private ArrayList<String> foodPrices;
+    private ArrayList<Integer> foodQuantities;
     private String address;
     private String totalPrice;
     private String phoneNumber;
@@ -23,85 +19,32 @@ public class OrderDetails implements Serializable, Parcelable {
     private String itemPushKey;
     private long currentTime;
 
-    // Default constructor (required for Firebase)
     public OrderDetails() {
+        // Required for Firebase
     }
 
-    // Constructor with all fields
-    public OrderDetails(String userUid, String userName, ArrayList<String> foodNames,
-                        ArrayList<String> foodPrices, ArrayList<String> foodImages,
-                        ArrayList<Integer> foodQuantities, String address, String totalPrice,
-                        String phoneNumber, long currentTime, String itemPushKey,
+    public OrderDetails(String userId, String name, ArrayList<String> foodItemName,
+                        ArrayList<String> foodItemPrice, ArrayList<String> foodItemImage,
+                        ArrayList<Integer> foodItemQuantities, String address,
+                        String totalAmount, String phone, long time, String itemPushKey,
                         boolean orderAccepted, boolean paymentReceived) {
-        this.userUid = userUid;
-        this.userName = userName;
-        this.foodNames = foodNames;
-        this.foodPrices = foodPrices;
-        this.foodImages = foodImages;
-        this.foodQuantities = foodQuantities;
+
+        this.userUid = userId;
+        this.userName = name;
+        this.foodNames = foodItemName;
+        this.foodPrices = foodItemPrice;
+        this.foodImages = foodItemImage;
+        this.foodQuantities = foodItemQuantities;
         this.address = address;
-        this.totalPrice = totalPrice;
-        this.phoneNumber = phoneNumber;
-        this.currentTime = currentTime;
+        this.totalPrice = totalAmount;
+        this.phoneNumber = phone;
+        this.currentTime = time;
         this.itemPushKey = itemPushKey;
         this.orderAccepted = orderAccepted;
         this.paymentReceived = paymentReceived;
     }
 
-    // Parcelable constructor
-    protected OrderDetails(Parcel in) {
-        userUid = in.readString();
-        userName = in.readString();
-        foodNames = in.createStringArrayList();
-        foodImages = in.createStringArrayList();
-        foodPrices = in.createStringArrayList();
-        foodQuantities = new ArrayList<>();
-        in.readList(foodQuantities, Integer.class.getClassLoader());
-        address = in.readString();
-        totalPrice = in.readString();
-        phoneNumber = in.readString();
-        orderAccepted = in.readByte() != 0;
-        paymentReceived = in.readByte() != 0;
-        itemPushKey = in.readString();
-        currentTime = in.readLong();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userUid);
-        dest.writeString(userName);
-        dest.writeStringList(foodNames);
-        dest.writeStringList(foodImages);
-        dest.writeStringList(foodPrices);
-        dest.writeList(foodQuantities);
-        dest.writeString(address);
-        dest.writeString(totalPrice);
-        dest.writeString(phoneNumber);
-        dest.writeByte((byte) (orderAccepted ? 1 : 0));
-        dest.writeByte((byte) (paymentReceived ? 1 : 0));
-        dest.writeString(itemPushKey);
-        dest.writeLong(currentTime);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<OrderDetails> CREATOR = new Creator<OrderDetails>() {
-        @Override
-        public OrderDetails createFromParcel(Parcel in) {
-            return new OrderDetails(in);
-        }
-
-        @Override
-        public OrderDetails[] newArray(int size) {
-            return new OrderDetails[size];
-        }
-    };
-
-    // === Getters and Setters ===
-
+    // Getters and Setters
     public String getUserUid() {
         return userUid;
     }
@@ -118,35 +61,35 @@ public class OrderDetails implements Serializable, Parcelable {
         this.userName = userName;
     }
 
-    public List<String> getFoodNames() {
+    public ArrayList<String> getFoodNames() {
         return foodNames;
     }
 
-    public void setFoodNames(List<String> foodNames) {
+    public void setFoodNames(ArrayList<String> foodNames) {
         this.foodNames = foodNames;
     }
 
-    public List<String> getFoodImages() {
+    public ArrayList<String> getFoodImages() {
         return foodImages;
     }
 
-    public void setFoodImages(List<String> foodImages) {
+    public void setFoodImages(ArrayList<String> foodImages) {
         this.foodImages = foodImages;
     }
 
-    public List<String> getFoodPrices() {
+    public ArrayList<String> getFoodPrices() {
         return foodPrices;
     }
 
-    public void setFoodPrices(List<String> foodPrices) {
+    public void setFoodPrices(ArrayList<String> foodPrices) {
         this.foodPrices = foodPrices;
     }
 
-    public List<Integer> getFoodQuantities() {
+    public ArrayList<Integer> getFoodQuantities() {
         return foodQuantities;
     }
 
-    public void setFoodQuantities(List<Integer> foodQuantities) {
+    public void setFoodQuantities(ArrayList<Integer> foodQuantities) {
         this.foodQuantities = foodQuantities;
     }
 
@@ -174,7 +117,7 @@ public class OrderDetails implements Serializable, Parcelable {
         this.phoneNumber = phoneNumber;
     }
 
-    public boolean getOrderAccepted() {
+    public boolean isOrderAccepted() {
         return orderAccepted;
     }
 
@@ -182,7 +125,7 @@ public class OrderDetails implements Serializable, Parcelable {
         this.orderAccepted = orderAccepted;
     }
 
-    public boolean getPaymentReceived() {
+    public boolean isPaymentReceived() {
         return paymentReceived;
     }
 

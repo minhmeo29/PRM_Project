@@ -75,7 +75,7 @@ class HistoryFragment : Fragment() {
 
         val buyItemReference: DatabaseReference =
             database.reference.child("user").child(userId).child("BuyHistory")
-        val sortingQuery = buyItemReference.orderByChild("CartItems")
+        val sortingQuery = buyItemReference.orderByChild("currentTime")
 
         sortingQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
