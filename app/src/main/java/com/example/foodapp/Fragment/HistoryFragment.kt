@@ -113,7 +113,7 @@ class HistoryFragment : Fragment() {
                 val image = it.foodImages?.firstOrNull() ?: ""
                 Glide.with(requireContext()).load(image).into(buyAgainFoodImage)
 
-                val isOrderIsAccepted = listOfOrderItem[0].orderAccepted
+                val isOrderIsAccepted = listOfOrderItem[0].isOrderAccepted
                 Log.d("TAG", "setDataInRecentBuyItem: $isOrderIsAccepted")
                 if (isOrderIsAccepted){
                     orderdStutus.background.setTint(Color.GREEN)
