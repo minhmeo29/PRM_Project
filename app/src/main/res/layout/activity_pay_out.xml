@@ -61,6 +61,7 @@
             android:textColorHighlight="@color/black" />
 
         <EditText
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -97,15 +98,16 @@
             android:textColorHighlight="@color/black" />
 
         <EditText
+            android:id="@+id/address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:ems="10"
 
+            android:ems="10"
             android:fontFamily="@font/lato_black"
             android:inputType="textMultiLine"
-            android:text="FPT Hà Nội,hehehehehehehehehehehe"
+            android:text="FPT Hà Nội"
             android:textColor="@color/black"
             android:textColorHighlight="@color/black" />
     </LinearLayout>
@@ -133,6 +135,7 @@
             android:textColorHighlight="@color/black" />
 
         <EditText
+            android:id="@+id/phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -202,6 +205,7 @@
             android:textColorHighlight="@color/black" />
 
         <EditText
+            android:id="@+id/totalAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -211,7 +215,7 @@
             android:gravity="end"
             android:inputType="none"
             android:paddingEnd="32dp"
-            android:text="100,000VND"
+            android:text=""
             android:textColor="@color/green_light"
             android:textSize="20sp" />
     </LinearLayout>
