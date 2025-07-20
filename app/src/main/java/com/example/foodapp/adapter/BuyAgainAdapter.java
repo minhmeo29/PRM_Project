@@ -1,27 +1,33 @@
 package com.example.foodapp.adapter;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.foodapp.databinding.BuyAgainItemBinding;
 
 import java.util.ArrayList;
-
+import java.util.List;
+import android.content.Context;
 public class BuyAgainAdapter extends RecyclerView.Adapter<BuyAgainAdapter.BuyAgainViewHolder> {
 
-    private final ArrayList<String> buyAgainFoodName;
-    private final ArrayList<String> buyAgainFoodPrice;
-    private final ArrayList<Integer> buyAgainFoodImage;
+    private final List<String> buyAgainFoodName;
+    private final List<String> buyAgainFoodPrice;
+    private final List<String> buyAgainFoodImage;
+    private final Context context;
 
-    public BuyAgainAdapter(ArrayList<String> buyAgainFoodName,
-                           ArrayList<String> buyAgainFoodPrice,
-                           ArrayList<Integer> buyAgainFoodImage) {
+    public BuyAgainAdapter(List<String> buyAgainFoodName,
+                           List<String> buyAgainFoodPrice,
+                           List<String> buyAgainFoodImage,
+                           Context context) {
         this.buyAgainFoodName = buyAgainFoodName;
         this.buyAgainFoodPrice = buyAgainFoodPrice;
         this.buyAgainFoodImage = buyAgainFoodImage;
+        this.context = context;
     }
 
     @NonNull
@@ -46,18 +52,22 @@ public class BuyAgainAdapter extends RecyclerView.Adapter<BuyAgainAdapter.BuyAga
         return buyAgainFoodName.size();
     }
 
-    public static class BuyAgainViewHolder extends RecyclerView.ViewHolder {
+    class BuyAgainViewHolder extends RecyclerView.ViewHolder {
         private final BuyAgainItemBinding binding;
 
-        public BuyAgainViewHolder(@NonNull BuyAgainItemBinding binding) {
+        public BuyAgainViewHolder(BuyAgainItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(String foodName, String foodPrice, int foodImage) {
+        public void bind(String foodName, String foodPrice, String foodImage) {
             binding.buyAgainFoodName.setText(foodName);
             binding.buyAgainFoodPrice.setText(foodPrice);
-            binding.buyAgainFoodImage.setImageResource(foodImage);
+
+            Uri uri = Uri.parse(foodImage);
+            Glide.with(context)
+                    .load(uri)
+                    .into(binding.buyAgainFoodImage);
         }
     }
 }
