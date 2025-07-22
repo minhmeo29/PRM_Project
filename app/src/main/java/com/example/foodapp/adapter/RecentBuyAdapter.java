@@ -8,10 +8,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.foodapp.databinding.RecentBuyItemBinding;
 
 import java.util.ArrayList;
-import com.bumptech.glide.Glide;
+
 public class RecentBuyAdapter extends RecyclerView.Adapter<RecentBuyAdapter.RecentViewHolder> {
 
     private Context context;
@@ -35,8 +36,8 @@ public class RecentBuyAdapter extends RecyclerView.Adapter<RecentBuyAdapter.Rece
     @NonNull
     @Override
     public RecentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        RecentBuyItemBinding binding = RecentBuyItemBinding.inflate(
-                LayoutInflater.from(parent.getContext()), parent, false);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        RecentBuyItemBinding binding = RecentBuyItemBinding.inflate(inflater, parent, false);
         return new RecentViewHolder(binding);
     }
 
@@ -51,10 +52,9 @@ public class RecentBuyAdapter extends RecyclerView.Adapter<RecentBuyAdapter.Rece
     }
 
     public class RecentViewHolder extends RecyclerView.ViewHolder {
+        private RecentBuyItemBinding binding;
 
-        private final RecentBuyItemBinding binding;
-
-        public RecentViewHolder(@NonNull RecentBuyItemBinding binding) {
+        public RecentViewHolder(RecentBuyItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
@@ -67,9 +67,7 @@ public class RecentBuyAdapter extends RecyclerView.Adapter<RecentBuyAdapter.Rece
             String uriString = foodImageList.get(position);
             Uri uri = Uri.parse(uriString);
 
-            Glide.with(context)
-                    .load(uri)
-                    .into(binding.foodImage);
+            Glide.with(context).load(uri).into(binding.foodImage);
         }
     }
 }
