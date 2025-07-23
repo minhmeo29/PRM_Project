@@ -18,6 +18,7 @@ public class OrderDetails implements Serializable {
     private boolean paymentReceived;
     private String itemPushKey;
     private long currentTime;
+    private boolean AcceptedOrder;
 
     public OrderDetails() {
         // Required for Firebase
@@ -147,5 +148,12 @@ public class OrderDetails implements Serializable {
 
     public void setCurrentTime(long currentTime) {
         this.currentTime = currentTime;
+    }
+
+    public boolean isAcceptedOrder() {
+        return AcceptedOrder;
+    }
+    public void setAcceptedOrder(boolean acceptedOrder) {
+        AcceptedOrder = acceptedOrder;
     }
 }

@@ -80,7 +80,7 @@ public class PayOutActivity extends AppCompatActivity {
                     DatabaseReference reference = database.getReference("OrderDetails").push();
                     String itemPushKey = reference.getKey();
                     OrderDetails order = new OrderDetails(
-                            userUid,
+                            userId, // Đúng userUid thực tế
                             name,
                             foodNames,
                             foodPrices,
@@ -96,6 +96,31 @@ public class PayOutActivity extends AppCompatActivity {
                     );
                     reference.setValue(order).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
+                            // Ghi BuyHistory cho user
+                            DatabaseReference buyHistoryRef = database.getReference()
+                                .child("users")
+                                .child(userId)
+                                .child("BuyHistory")
+                                .child(itemPushKey);
+
+                            // Tạo dữ liệu BuyHistory (dùng Map để thêm AcceptedOrder)
+                            java.util.Map<String, Object> buyHistoryMap = new java.util.HashMap<>();
+                            buyHistoryMap.put("userUid", userUid);
+                            buyHistoryMap.put("userName", name);
+                            buyHistoryMap.put("foodNames", foodNames);
+                            buyHistoryMap.put("foodPrices", foodPrices);
+                            buyHistoryMap.put("foodImages", foodImages);
+                            buyHistoryMap.put("foodQuantities", foodQuantities);
+                            buyHistoryMap.put("address", address);
+                            buyHistoryMap.put("totalPrice", totalPrice);
+                            buyHistoryMap.put("phoneNumber", phone);
+                            buyHistoryMap.put("currentTime", currentTime);
+                            buyHistoryMap.put("itemPushKey", itemPushKey);
+                            buyHistoryMap.put("orderAccepted", false);
+                            buyHistoryMap.put("paymentReceived", false);
+                            buyHistoryMap.put("AcceptedOrder", false);
+
+                            buyHistoryRef.setValue(buyHistoryMap);
                             // ✅ Dùng userId từ FirebaseAuth, KHÔNG dùng userUid từ intent
                             database.getReference().child("users").child(userId).child("CartItems").removeValue()
                                     .addOnCompleteListener(cartClearTask -> {

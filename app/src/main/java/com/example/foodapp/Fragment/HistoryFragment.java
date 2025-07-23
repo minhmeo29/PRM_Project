@@ -47,11 +47,25 @@ public class HistoryFragment extends Fragment {
     }
 
     private void updateOrderStatus() {
+        if (listOfOrderItem.isEmpty()) return;
         String itemPushKey = listOfOrderItem.get(0).getItemPushKey();
-        if (itemPushKey != null) {
-            DatabaseReference completeOrderReference = database.getReference()
-                    .child("CompletedOrder").child(itemPushKey);
-            completeOrderReference.child("paymentReceived").setValue(true);
+        if (itemPushKey != null && userId != null && !userId.isEmpty()) {
+            // Cập nhật paymentReceived = true ở CompletedOrder
+            database.getReference()
+                .child("CompletedOrder").child(itemPushKey).child("paymentReceived")
+                .setValue(true);
+
+            // (Có thể giữ lại hoặc bỏ cập nhật orderAccepted tuỳ vào luồng mới)
+            // database.getReference()
+            //     .child("users").child(userId).child("BuyHistory").child(itemPushKey).child("orderAccepted")
+            //     .setValue(false);
+            // database.getReference()
+            //     .child("OrderDetails").child(itemPushKey).child("orderAccepted")
+            //     .setValue(false);
+
+            // UI
+            binding.receivedButton.setVisibility(View.GONE);
+            binding.orderdStutus.getBackground().setTint(Color.GREEN);
         }
     }
 
@@ -113,9 +127,12 @@ public class HistoryFragment extends Fragment {
 
             Glide.with(requireContext()).load(image).into(binding.buyAgainFoodImage);
 
-            if (recentOrderItem.isOrderAccepted()) {
+            boolean isOrderAccepted = recentOrderItem.isOrderAccepted();
+            if (isOrderAccepted) {
                 binding.orderdStutus.getBackground().setTint(Color.GREEN);
                 binding.receivedButton.setVisibility(View.VISIBLE);
+            } else {
+                binding.receivedButton.setVisibility(View.INVISIBLE);
             }
         }
     }
