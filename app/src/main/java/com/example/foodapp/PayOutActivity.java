@@ -96,14 +96,24 @@ public class PayOutActivity extends AppCompatActivity {
                     );
                     reference.setValue(order).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(PayOutActivity.this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
-                            Intent intent1 = new Intent(PayOutActivity.this, MainActivity.class);
-                            intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent1);
+                            // ✅ Dùng userId từ FirebaseAuth, KHÔNG dùng userUid từ intent
+                            database.getReference().child("users").child(userId).child("CartItems").removeValue()
+                                    .addOnCompleteListener(cartClearTask -> {
+                                        if (cartClearTask.isSuccessful()) {
+                                            Toast.makeText(PayOutActivity.this, "Đặt hàng thành công và đã xóa giỏ hàng!", Toast.LENGTH_LONG).show();
+                                            Intent intent1 = new Intent(PayOutActivity.this, MainActivity.class);
+                                            intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                            startActivity(intent1);
+                                        } else {
+                                            Toast.makeText(PayOutActivity.this, "Đơn hàng thành công nhưng KHÔNG xoá được giỏ hàng!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                         } else {
                             Toast.makeText(PayOutActivity.this, "Lỗi đặt hàng!", Toast.LENGTH_SHORT).show();
                         }
                     });
+
+
                 }
                 @Override
                 public void onCancelled(DatabaseError error) {
