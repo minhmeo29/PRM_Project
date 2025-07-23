@@ -113,20 +113,16 @@ public class HistoryFragment extends Fragment {
     private void setDataInRecentBuyItem() {
         if (!listOfOrderItem.isEmpty()) {
             OrderDetails recentOrderItem = listOfOrderItem.get(0);
-
+            binding.cardView6.setVisibility(View.VISIBLE);
             binding.buyAgainFoodName.setText(
                     recentOrderItem.getFoodNames() != null && !recentOrderItem.getFoodNames().isEmpty()
                             ? recentOrderItem.getFoodNames().get(0) : "");
-
             binding.buyAgainFoodPrice.setText(
                     recentOrderItem.getFoodPrices() != null && !recentOrderItem.getFoodPrices().isEmpty()
                             ? recentOrderItem.getFoodPrices().get(0) : "");
-
             String image = (recentOrderItem.getFoodImages() != null && !recentOrderItem.getFoodImages().isEmpty())
                     ? recentOrderItem.getFoodImages().get(0) : "";
-
             Glide.with(requireContext()).load(image).into(binding.buyAgainFoodImage);
-
             boolean isOrderAccepted = recentOrderItem.isOrderAccepted();
             if (isOrderAccepted) {
                 binding.orderdStutus.getBackground().setTint(Color.GREEN);
@@ -134,6 +130,9 @@ public class HistoryFragment extends Fragment {
             } else {
                 binding.receivedButton.setVisibility(View.INVISIBLE);
             }
+        } else {
+            // Ẩn cardView6 nếu chưa có đơn nào
+            binding.cardView6.setVisibility(View.GONE);
         }
     }
 
