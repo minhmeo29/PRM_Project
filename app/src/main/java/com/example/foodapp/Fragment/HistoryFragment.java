@@ -67,7 +67,7 @@ public class HistoryFragment extends Fragment {
         userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "";
 
         DatabaseReference buyItemReference = database.getReference()
-                .child("user").child(userId).child("BuyHistory");
+                .child("users").child(userId).child("BuyHistory");
 
         Query sortingQuery = buyItemReference.orderByChild("currentTime");
 
