@@ -79,7 +79,10 @@ public class DetailActivity extends AppCompatActivity {
                 .child("CartItems")
                 .push()
                 .setValue(cartItem)
-                .addOnSuccessListener(unused -> Toast.makeText(this, "Items added into cart successFully 😁", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Items added into cart successFully 😁", Toast.LENGTH_SHORT).show();
+                    binding.button8.setEnabled(false); // Disable nút sau khi thêm thành công
+                })
                 .addOnFailureListener(e -> Toast.makeText(this, "Item Not added 😒", Toast.LENGTH_SHORT).show());
     }
 }
