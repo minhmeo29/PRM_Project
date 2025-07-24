@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import android.view.View;
+import android.widget.Button;
+
 
 import com.example.foodapp.Fragment.NotificationBottomFragment;
 import com.example.foodapp.databinding.ActivityMainBinding;
@@ -39,5 +42,14 @@ public class MainActivity extends AppCompatActivity {
         binding.seedMenuButton.setOnClickListener(v -> {
             startActivity(new Intent(this, SeedMenuActivity.class));
         });
+        Button logoutButton = findViewById(R.id.logoutButton);
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogoutHelper.logoutUser(MainActivity.this);
+            }
+        });
+
     }
 }
