@@ -71,6 +71,8 @@
                 android:fontFamily="@font/lato_regular"
                 android:text="Mua lại"
                 android:textAllCaps="false"
+                android:visibility="gone"
+
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"

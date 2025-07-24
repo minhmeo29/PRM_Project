@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.foodapp.databinding.RecentBuyItemBinding;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import java.util.ArrayList;
 
@@ -61,13 +63,28 @@ public class RecentBuyAdapter extends RecyclerView.Adapter<RecentBuyAdapter.Rece
 
         public void bind(int position) {
             binding.foodName.setText(foodNameList.get(position));
-            binding.foodPrice.setText(foodPriceList.get(position));
+
+            try {
+                String rawPrice = foodPriceList.get(position);
+
+                if (rawPrice.toUpperCase().contains("VND")) {
+                    binding.foodPrice.setText(rawPrice);
+                } else {
+                    int price = Integer.parseInt(rawPrice);
+                    NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+                    String formattedPrice = formatter.format(price) + " VND";
+                    binding.foodPrice.setText(formattedPrice);
+                }
+            } catch (NumberFormatException e) {
+                binding.foodPrice.setText(foodPriceList.get(position));
+            }
+
             binding.foodQuantity.setText(String.valueOf(foodQuantityList.get(position)));
 
             String uriString = foodImageList.get(position);
             Uri uri = Uri.parse(uriString);
-
             Glide.with(context).load(uri).into(binding.foodImage);
         }
+
     }
 }

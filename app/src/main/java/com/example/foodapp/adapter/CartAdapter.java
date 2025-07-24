@@ -5,6 +5,9 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -87,7 +90,25 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         public void bind(int position) {
             int quantity = itemQuantities[position];
             binding.cartFoodName.setText(cartItems.get(position));
-            binding.cartitemPrice.setText(cartItemPrices.get(position));
+            try {
+                String rawPrice = cartItemPrices.get(position);
+
+                // Nếu chuỗi đã chứa "VND" (không phân biệt hoa thường), giữ nguyên
+                if (rawPrice.toUpperCase().contains("VND")) {
+                    binding.cartitemPrice.setText(rawPrice);
+                } else {
+                    int price = Integer.parseInt(rawPrice);
+                    // Format theo kiểu "20,000" (phẩy)
+                    NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+                    String formattedPrice = formatter.format(price) + " VND";
+                    binding.cartitemPrice.setText(formattedPrice);
+                }
+            } catch (NumberFormatException e) {
+                // fallback: giữ nguyên không thêm VND nữa
+                binding.cartitemPrice.setText(cartItemPrices.get(position));
+            }
+
+
             // Xử lý ảnh
             String uriString = cartImages.get(position);
             Uri uri = null;

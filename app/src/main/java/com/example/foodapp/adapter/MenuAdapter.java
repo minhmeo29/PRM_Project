@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -80,10 +82,25 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuViewHolder
         public void bind(int position) {
             MenuItem menuItem = menuItems.get(position);
             menuFoodName.setText(menuItem.getFoodName());
-            menuPrice.setText(menuItem.getFoodPrice());
+
+            String price = menuItem.getFoodPrice();
+            if (!price.contains("VND")) {
+                // Thêm dấu phẩy ngăn cách hàng nghìn nếu cần
+                try {
+                    int priceValue = Integer.parseInt(price);
+                    price = String.format("%,d VND", priceValue);
+                } catch (NumberFormatException e) {
+                    price = price + " VND"; // fallback nếu không thể parse
+                }
+            }
+
+            menuPrice.setText(price);
+
             if (menuItem.getFoodImage() != null) {
                 Glide.with(context).load(Uri.parse(menuItem.getFoodImage())).into(menuImage);
             }
         }
+
+
     }
-} 
+}

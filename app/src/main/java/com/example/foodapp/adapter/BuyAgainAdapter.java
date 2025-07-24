@@ -1,8 +1,11 @@
 package com.example.foodapp.adapter;
 
+import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,9 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.foodapp.databinding.BuyAgainItemBinding;
 
-import java.util.ArrayList;
 import java.util.List;
-import android.content.Context;
+
 public class BuyAgainAdapter extends RecyclerView.Adapter<BuyAgainAdapter.BuyAgainViewHolder> {
 
     private final List<String> buyAgainFoodName;
@@ -40,16 +42,22 @@ public class BuyAgainAdapter extends RecyclerView.Adapter<BuyAgainAdapter.BuyAga
 
     @Override
     public void onBindViewHolder(@NonNull BuyAgainViewHolder holder, int position) {
-        holder.bind(
-                buyAgainFoodName.get(position),
-                buyAgainFoodPrice.get(position),
-                buyAgainFoodImage.get(position)
-        );
+        // Bảo vệ khỏi lỗi IndexOutOfBounds
+        if (position < buyAgainFoodName.size() &&
+                position < buyAgainFoodPrice.size() &&
+                position < buyAgainFoodImage.size()) {
+            holder.bind(
+                    buyAgainFoodName.get(position),
+                    buyAgainFoodPrice.get(position),
+                    buyAgainFoodImage.get(position)
+            );
+        }
     }
 
     @Override
     public int getItemCount() {
-        return buyAgainFoodName.size();
+        return Math.min(buyAgainFoodName.size(),
+                Math.min(buyAgainFoodPrice.size(), buyAgainFoodImage.size()));
     }
 
     class BuyAgainViewHolder extends RecyclerView.ViewHolder {
@@ -62,12 +70,31 @@ public class BuyAgainAdapter extends RecyclerView.Adapter<BuyAgainAdapter.BuyAga
 
         public void bind(String foodName, String foodPrice, String foodImage) {
             binding.buyAgainFoodName.setText(foodName);
-            binding.buyAgainFoodPrice.setText(foodPrice);
 
-            Uri uri = Uri.parse(foodImage);
-            Glide.with(context)
-                    .load(uri)
-                    .into(binding.buyAgainFoodImage);
+            try {
+                // Nếu chuỗi đã chứa "VND" thì hiển thị luôn
+                if (foodPrice.contains("VND")) {
+                    binding.buyAgainFoodPrice.setText(foodPrice);
+                } else {
+                    int price = Integer.parseInt(foodPrice);
+                    NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+                    String formattedPrice = formatter.format(price) + " VND";
+                    binding.buyAgainFoodPrice.setText(formattedPrice);
+                }
+            } catch (NumberFormatException e) {
+                // fallback: giữ nguyên giá trị nếu không thể parse
+                binding.buyAgainFoodPrice.setText(foodPrice);
+            }
+
+            if (foodImage != null && !foodImage.isEmpty()) {
+                Uri uri = Uri.parse(foodImage);
+                Glide.with(context)
+                        .load(uri)
+                        .into(binding.buyAgainFoodImage);
+            } else {
+                binding.buyAgainFoodImage.setImageResource(android.R.drawable.ic_menu_report_image); // ảnh mặc định
+            }
         }
+
     }
 }
