@@ -10,20 +10,18 @@ import com.example.foodapp.databinding.ActivityPayOutBinding;
 import com.example.foodapp.model.OrderDetails;
 import com.example.foodapp.model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PayOutActivity extends AppCompatActivity {
 
     ActivityPayOutBinding binding;
     ArrayList<String> foodNames, foodPrices, foodImages;
     ArrayList<Integer> foodQuantities;
-    String userUid, totalPrice;
+    String totalPrice;
     long currentTime;
     FirebaseDatabase database;
     FirebaseAuth auth;
@@ -36,6 +34,7 @@ public class PayOutActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
+        currentTime = System.currentTimeMillis();
 
         // Nhận dữ liệu từ Intent
         Intent intent = getIntent();
@@ -43,106 +42,112 @@ public class PayOutActivity extends AppCompatActivity {
         foodPrices = intent.getStringArrayListExtra("FoodItemPrice");
         foodImages = intent.getStringArrayListExtra("FoodItemImage");
         foodQuantities = intent.getIntegerArrayListExtra("FoodItemQuantities");
-
-        userUid = intent.getStringExtra("userUid");
         totalPrice = intent.getStringExtra("totalPrice");
-        currentTime = System.currentTimeMillis();
 
         // Hiển thị tổng tiền
-        String totalPrice = getIntent().getStringExtra("totalPrice");
         binding.totalAmount.setText(totalPrice);
 
-        // Nút Đặt đồ
-        binding.orderButton.setOnClickListener(view -> {
-            String address = binding.address.getText().toString().trim();
-            String phone = binding.phone.getText().toString().trim();
+        // Lấy userId từ FirebaseAuth
+        String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
 
-            if (address.isEmpty() || phone.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ Địa chỉ và Số điện thoại!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String userId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
-            if (userId == null) {
-                Toast.makeText(this, "Không xác định được người dùng!", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        // Load thông tin user từ Firebase
+        if (userId != null) {
             DatabaseReference userRef = database.getReference("users").child(userId);
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     UserModel user = snapshot.getValue(UserModel.class);
-                    String name = (user != null && user.getName() != null && !user.getName().isEmpty()) ? user.getName() : binding.name.getText().toString().trim();
-                    if (name.isEmpty()) {
-                        Toast.makeText(PayOutActivity.this, "Vui lòng nhập tên!", Toast.LENGTH_SHORT).show();
-                        return;
+                    if (user != null) {
+                        if (user.getName() != null) binding.name.setText(user.getName());
+                        if (user.getAddress() != null) binding.address.setText(user.getAddress());
+                        if (user.getPhone() != null) binding.phone.setText(user.getPhone());
                     }
-                    DatabaseReference reference = database.getReference("OrderDetails").push();
-                    String itemPushKey = reference.getKey();
-                    OrderDetails order = new OrderDetails(
-                            userId, // Đúng userUid thực tế
-                            name,
-                            foodNames,
-                            foodPrices,
-                            foodImages,
-                            foodQuantities,
-                            address,
-                            totalPrice,
-                            phone,
-                            currentTime,
-                            itemPushKey,
-                            false,
-                            false
-                    );
-                    reference.setValue(order).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            // Ghi BuyHistory cho user
-                            DatabaseReference buyHistoryRef = database.getReference()
-                                .child("users")
-                                .child(userId)
-                                .child("BuyHistory")
-                                .child(itemPushKey);
-
-                            // Tạo dữ liệu BuyHistory (dùng Map để thêm AcceptedOrder)
-                            java.util.Map<String, Object> buyHistoryMap = new java.util.HashMap<>();
-                            buyHistoryMap.put("userUid", userUid);
-                            buyHistoryMap.put("userName", name);
-                            buyHistoryMap.put("foodNames", foodNames);
-                            buyHistoryMap.put("foodPrices", foodPrices);
-                            buyHistoryMap.put("foodImages", foodImages);
-                            buyHistoryMap.put("foodQuantities", foodQuantities);
-                            buyHistoryMap.put("address", address);
-                            buyHistoryMap.put("totalPrice", totalPrice);
-                            buyHistoryMap.put("phoneNumber", phone);
-                            buyHistoryMap.put("currentTime", currentTime);
-                            buyHistoryMap.put("itemPushKey", itemPushKey);
-                            buyHistoryMap.put("orderAccepted", false);
-                            buyHistoryMap.put("paymentReceived", false);
-                            buyHistoryMap.put("AcceptedOrder", false);
-
-                            buyHistoryRef.setValue(buyHistoryMap);
-                            // ✅ Dùng userId từ FirebaseAuth, KHÔNG dùng userUid từ intent
-                            database.getReference().child("users").child(userId).child("CartItems").removeValue()
-                                    .addOnCompleteListener(cartClearTask -> {
-                                        if (cartClearTask.isSuccessful()) {
-                                            Toast.makeText(PayOutActivity.this, "Đặt hàng thành công và đã xóa giỏ hàng!", Toast.LENGTH_LONG).show();
-                                            Intent intent1 = new Intent(PayOutActivity.this, MainActivity.class);
-                                            intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                            startActivity(intent1);
-                                        } else {
-                                            Toast.makeText(PayOutActivity.this, "Đơn hàng thành công nhưng KHÔNG xoá được giỏ hàng!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        } else {
-                            Toast.makeText(PayOutActivity.this, "Lỗi đặt hàng!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
                 }
+
                 @Override
                 public void onCancelled(DatabaseError error) {
-                    Toast.makeText(PayOutActivity.this, "Không lấy được thông tin user!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PayOutActivity.this, "Không thể tải thông tin người dùng!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        // Nút Đặt hàng
+        binding.orderButton.setOnClickListener(view -> {
+            String name = binding.name.getText().toString().trim();
+            String address = binding.address.getText().toString().trim();
+            String phone = binding.phone.getText().toString().trim();
+
+            if (name.isEmpty() || address.isEmpty() || phone.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập đầy đủ Tên, Địa chỉ và Số điện thoại!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (userId == null) {
+                Toast.makeText(this, "Không xác định được người dùng!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            DatabaseReference orderRef = database.getReference("OrderDetails").push();
+            String itemPushKey = orderRef.getKey();
+
+            // Tạo đối tượng OrderDetails
+            OrderDetails order = new OrderDetails(
+                    userId,
+                    name,
+                    foodNames,
+                    foodPrices,
+                    foodImages,
+                    foodQuantities,
+                    address,
+                    totalPrice,
+                    phone,
+                    currentTime,
+                    itemPushKey,
+                    false,
+                    false
+            );
+
+            // Ghi vào "OrderDetails"
+            orderRef.setValue(order).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // Ghi lịch sử vào "BuyHistory"
+                    DatabaseReference buyHistoryRef = database.getReference("users")
+                            .child(userId)
+                            .child("BuyHistory")
+                            .child(itemPushKey);
+
+                    Map<String, Object> buyHistoryMap = new HashMap<>();
+                    buyHistoryMap.put("userUid", userId);
+                    buyHistoryMap.put("userName", name);
+                    buyHistoryMap.put("foodNames", foodNames);
+                    buyHistoryMap.put("foodPrices", foodPrices);
+                    buyHistoryMap.put("foodImages", foodImages);
+                    buyHistoryMap.put("foodQuantities", foodQuantities);
+                    buyHistoryMap.put("address", address);
+                    buyHistoryMap.put("totalPrice", totalPrice);
+                    buyHistoryMap.put("phoneNumber", phone);
+                    buyHistoryMap.put("currentTime", currentTime);
+                    buyHistoryMap.put("itemPushKey", itemPushKey);
+                    buyHistoryMap.put("orderAccepted", false);
+                    buyHistoryMap.put("paymentReceived", false);
+                    buyHistoryMap.put("AcceptedOrder", false);
+
+                    buyHistoryRef.setValue(buyHistoryMap);
+
+                    // Xoá giỏ hàng
+                    database.getReference("users").child(userId).child("CartItems").removeValue()
+                            .addOnCompleteListener(cartClearTask -> {
+                                if (cartClearTask.isSuccessful()) {
+                                    Toast.makeText(PayOutActivity.this, "Đặt hàng thành công và đã xóa giỏ hàng!", Toast.LENGTH_LONG).show();
+                                    Intent intent1 = new Intent(PayOutActivity.this, MainActivity.class);
+                                    intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent1);
+                                } else {
+                                    Toast.makeText(PayOutActivity.this, "Đơn hàng thành công nhưng KHÔNG xoá được giỏ hàng!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    Toast.makeText(PayOutActivity.this, "Lỗi khi đặt hàng!", Toast.LENGTH_SHORT).show();
                 }
             });
         });
