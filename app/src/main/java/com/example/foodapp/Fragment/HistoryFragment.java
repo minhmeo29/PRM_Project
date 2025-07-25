@@ -50,18 +50,10 @@ public class HistoryFragment extends Fragment {
         if (listOfOrderItem.isEmpty()) return;
         String itemPushKey = listOfOrderItem.get(0).getItemPushKey();
         if (itemPushKey != null && userId != null && !userId.isEmpty()) {
-            // Cập nhật paymentReceived = true ở CompletedOrder
+            // Chỉ cập nhật paymentReceived = true ở OrderDetails
             database.getReference()
-                .child("CompletedOrder").child(itemPushKey).child("paymentReceived")
+                .child("OrderDetails").child(itemPushKey).child("paymentReceived")
                 .setValue(true);
-
-            // (Có thể giữ lại hoặc bỏ cập nhật orderAccepted tuỳ vào luồng mới)
-            // database.getReference()
-            //     .child("users").child(userId).child("BuyHistory").child(itemPushKey).child("orderAccepted")
-            //     .setValue(false);
-            // database.getReference()
-            //     .child("OrderDetails").child(itemPushKey).child("orderAccepted")
-            //     .setValue(false);
 
             // UI
             binding.receivedButton.setVisibility(View.GONE);
